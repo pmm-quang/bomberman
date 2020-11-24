@@ -2,26 +2,21 @@ package uet.oop.bomberman.entities;
 
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
 import uet.oop.bomberman.boundedbox.RectBoundedBox;
+import uet.oop.bomberman.entities.Boms.Bom;
 import uet.oop.bomberman.graphics.Sprite;
 
-import java.security.Key;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Bomber extends Entity {
 
-    private Sprite[] bomberUp = {Sprite.player_up, Sprite.player_up_1, Sprite.player_up_2};
-    private Sprite[] bomberDown = {Sprite.player_down, Sprite.player_down_1, Sprite.player_down_2};
-    private Sprite[] bomberLeft = {Sprite.player_left, Sprite.player_left_1, Sprite.player_left_2};
-    private Sprite[] bomberRight = {Sprite.player_right, Sprite.player_right_1, Sprite.player_right_2};
+    private Sprite[] bomberUp = {Sprite.player_up_1, Sprite.player_up_2, Sprite.player_up};
+    private Sprite[] bomberDown = {Sprite.player_down_1, Sprite.player_down_2,Sprite.player_down};
+    private Sprite[] bomberLeft = {Sprite.player_left_1, Sprite.player_left_2, Sprite.player_left};
+    private Sprite[] bomberRight = {Sprite.player_right_1, Sprite.player_right_2, Sprite.player_right};
     private Sprite[] bomberDead = {Sprite.player_dead1, Sprite.player_dead2, Sprite.player_dead3};
     private boolean isKeyLeft;
     private boolean isKeyRight;
@@ -83,22 +78,19 @@ public class Bomber extends Entity {
                         if (e.getCode() == KeyCode.LEFT) {
                             isKeyLeft = false;
                             index = 0;
-                            img = bomberLeft[0].getFxImage();
+                            img = bomberLeft[2].getFxImage();
                         } else if (e.getCode() == KeyCode.RIGHT) {
                             isKeyRight = false;
                             index = 0;
-                            img = bomberRight[0].getFxImage();
+                            img = bomberRight[2].getFxImage();
                         } else if (e.getCode() == KeyCode.UP) {
                             isKeyUp = false;
                             index = 0;
-                            img = bomberUp[0].getFxImage();
+                            img = bomberUp[2].getFxImage();
                         } else if (e.getCode() == KeyCode.DOWN) {
                             isKeyDown = false;
                             index = 0;
-                            img = bomberDown[0].getFxImage();
-                        }
-                        if (e.getCode() == KeyCode.A) {
-                            haveBom = false;
+                            img = bomberDown[2].getFxImage();
                         }
                     }
                 });
@@ -108,42 +100,22 @@ public class Bomber extends Entity {
 
     @Override
     public void update(double time) {
+        int index = (int)((time % (2 * 0.1)) / 0.1);
         if (isKeyLeft) {
-            x--;
-            index++;
-            int tmp  = index / 8;
-           switch (tmp) {
-               case 0: this.img = bomberLeft[1].getFxImage(); break;
-               case 1: this.img = bomberLeft[2].getFxImage(); break;
-           }
-            if (index == 15) index = 0;
+            x = x - 1;
+           this.img = bomberLeft[index].getFxImage();
+
         } else if (isKeyRight) {
-            x++;
-            index++;
-            int tmp  = index / 8;
-            switch (tmp) {
-                case 0: this.img = bomberRight[1].getFxImage(); break;
-                case 1: this.img = bomberRight[2].getFxImage(); break;
-            }
-            if (index == 15) index = 0;
+            x = x + 1;
+            this.img = bomberRight[index].getFxImage();
+
         } else if (isKeyUp) {
-            y--;
-            index++;
-            int tmp  = index / 8;
-            switch (tmp) {
-                case 0: this.img = bomberUp[1].getFxImage(); break;
-                case 1: this.img = bomberUp[2].getFxImage(); break;
-            }
-            if (index == 15) index = 0;
+            y = y - 1;
+            this.img = bomberUp[index].getFxImage();
+
         } else if (isKeyDown) {
-            y++;
-            index++;
-            int tmp  = index / 8;
-            switch (tmp) {
-                case 0: this.img = bomberDown[1].getFxImage(); break;
-                case 1: this.img = bomberDown[2].getFxImage(); break;
-            }
-            if (index == 15) index = 0;
+            y = y + 1;
+            this.img = bomberDown[index].getFxImage();
         }
     }
 
@@ -179,14 +151,16 @@ public class Bomber extends Entity {
     }
 
     public Bom DatBom() {
-        int middleOfBomberX = this.getX() - Sprite.DEFAULT_SIZE;
-        int middleOfBomberY = this.getY() - Sprite.DEFAULT_SIZE;
-        int countX = middleOfBomberX % Sprite.SCALED_SIZE;
-        int countY = middleOfBomberY % Sprite.SCALED_SIZE;
-        int xBoom = middleOfBomberX / Sprite.SCALED_SIZE + Sprite.SCALED_SIZE;
-        int yBoom = middleOfBomberY / Sprite.SCALED_SIZE + Sprite.SCALED_SIZE;
+        int realX = this.getX() / Sprite.SCALED_SIZE;
+        int realY = this.getY() / Sprite.SCALED_SIZE;
+        int countX = this.getX() % Sprite.SCALED_SIZE;
+        int countY = this.getY() % Sprite.SCALED_SIZE;
+        if (countX > 15) realX ++;
+        if (countY > 15) realY ++;
         System.out.println(true);
-        return new Bom(xBoom, yBoom, Sprite.bomb.getFxImage());
+        Bom bom = new Bom(realX,realY, Sprite.bomb.getFxImage());
+        haveBom = false;
+        return bom;
 
 
     }

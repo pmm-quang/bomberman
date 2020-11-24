@@ -1,6 +1,6 @@
 package uet.oop.bomberman;
 
-import uet.oop.bomberman.entities.Bom;
+import uet.oop.bomberman.entities.Boms.Bom;
 import uet.oop.bomberman.entities.Entity;
 
 import java.util.ArrayList;

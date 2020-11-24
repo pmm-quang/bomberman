@@ -1,6 +1,5 @@
 package uet.oop.bomberman;
 
-import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -13,7 +12,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import uet.oop.bomberman.entities.Bom;
 import uet.oop.bomberman.entities.Bomber;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.Wall;
@@ -31,8 +29,7 @@ public class BombermanGame extends Application {
     private Canvas canvas;
     private List<Entity> entities = new ArrayList<>();
     private List<Entity> stillObjects = new ArrayList<>();
-    Bomber bomberman = new Bomber(1, 1, Sprite.player_right.getFxImage());
-    Bom bom;
+    Bomber bomberman;
 
     public static void main(String[] args) {
         Application.launch(BombermanGame.class);
@@ -57,35 +54,37 @@ public class BombermanGame extends Application {
 
         stage.show();
         createMap();
+        bomberman = new Bomber(1, 1, Sprite.player_right.getFxImage());
 
 
 
         Timeline gameLoop = new Timeline();
         gameLoop.setCycleCount(Timeline.INDEFINITE);
      //   gameLoop.setDelay(Duration.millis(300));
+        bomberman.eventHandler(scene);
         final long timeStart = System.currentTimeMillis();
-
         KeyFrame kf = new KeyFrame(
-                Duration.seconds(0.15), new EventHandler<ActionEvent>() {
+                Duration.seconds(0.017), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 double t  = (System.currentTimeMillis() - timeStart) / 1000.0;
-                bomberman.eventHandler(scene);
+
+                if (bomberman.isHaveBom()) {
+                    entities.add(bomberman.DatBom());
+                }
                 for (int i = 0; i < stillObjects.size(); i++) {
                     bomberman.canMove(stillObjects.get(i));
                 }
+
                 bomberman.update(t);
-                if (bomberman.isHaveBom()) {
-                    bom = bomberman.DatBom();
-                }
+                entities.forEach(g -> g.update(t));
+
                 render();
                 update();
             }
         });
         gameLoop.getKeyFrames().add(kf);
         gameLoop.play();
-
-
     }
 
     public void createMap() {
@@ -110,8 +109,10 @@ public class BombermanGame extends Application {
     public void render() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         stillObjects.forEach(g -> g.render(gc));
-        entities.forEach(g -> g.render(gc));
+        for (int i = 0; i < entities.size(); i++) {
+            entities.get(i).render(gc);
+        }
+     //   entities.forEach(g -> g.render(gc)); // cái đống này lưu tạm bom
        bomberman.render(gc);
-       if (bom != null) bom.render(gc);
     }
 }
