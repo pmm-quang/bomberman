@@ -1,23 +1,21 @@
 package uet.oop.bomberman.entities.Boms;
 
 import javafx.scene.image.Image;
-import uet.oop.bomberman.boundedbox.RectBoundedBox;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.graphics.Sprite;
 
 public class Bom extends Entity {
     private final int timeToBoom = 3;
-    private int timeStart;
+    private double timeStart;
+    private boolean bang;
     private Sprite[] boms = {Sprite.bomb, Sprite.bomb_1, Sprite.bomb_2};
 
-    public Bom(int x, int y, Image img) {
+    public Bom(int x, int y, Image img, double time) {
         super(x, y, img);
+        bang = false;
+        timeStart = time;
     }
 
-    @Override
-    public RectBoundedBox boundedBox() {
-        return null;
-    }
 
     @Override
     public boolean isColliding(Entity other) {
@@ -28,6 +26,13 @@ public class Bom extends Entity {
     public void update(double time) {
         int index = (int)((time % (boms.length * 0.1)) / 0.1);
         img = boms[index].getFxImage();
+        if (time - timeStart >= 3) {
+            bang = true;
+        }
+
     }
 
+    public boolean isBang() {
+        return bang;
+    }
 }

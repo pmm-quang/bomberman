@@ -1,6 +1,14 @@
 package uet.oop.bomberman.lever;
 
 import uet.oop.bomberman.Board;
+import uet.oop.bomberman.entities.Brick;
+import uet.oop.bomberman.entities.Item.BombItem;
+import uet.oop.bomberman.entities.Item.FlameItem;
+import uet.oop.bomberman.entities.Item.SpeedItem;
+import uet.oop.bomberman.entities.Portal;
+import uet.oop.bomberman.entities.enemy.Balloon;
+import uet.oop.bomberman.entities.enemy.Doll;
+import uet.oop.bomberman.entities.enemy.Oneal;
 import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.entities.Wall;
 import uet.oop.bomberman.graphics.Sprite;
@@ -10,20 +18,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileManagement{
-    private static char[][] map;
+    private char[][] map;
     private int level;
     private Board board;
     private int width;
     private int height;
 
 
-    public FileManagement() {
+    public FileManagement( Board board) {
+        this.board = board;
+    }
+
+    public char[][] getMap() {
+        return map;
     }
 
     public void ReadFromFile(int level) {
         List<String> list = new ArrayList<>();
         try {
-            String fileName = "res\\levels\\" + level + ".txt";
+            String fileName = "res\\levels\\Level" + level + ".txt";
             FileReader fr =new FileReader(fileName);
             BufferedReader br  = new BufferedReader(fr);
             String line = br.readLine();
@@ -31,6 +44,7 @@ public class FileManagement{
                 list.add(line);
                 line = br.readLine();
             }
+            System.out.println("seccess");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -38,7 +52,7 @@ public class FileManagement{
         }
 
         String[] arrays = list.get(0).split(" ");
-        level = Integer.parseInt(arrays[0]);
+        this.level = Integer.parseInt(arrays[0]);
         height = Integer.parseInt(arrays[1]);
         width = Integer.parseInt(arrays[2]);
         map = new char[height][width];
@@ -55,36 +69,39 @@ public class FileManagement{
             for (int j = 0; j < width; j++) {
                 char c = map[i][j];
                 switch (c) {
-                    case '#': // them grass
-                        board.addEntity(new Wall(j, i, Sprite.grass.getFxImage()));
+                    case '#': // them wall
+                        board.addStillObject(new Wall(j, i, Sprite.wall.getFxImage()));
                         break;
                     case 'x': // them Portal;
-                        // TODO: add;
+                        board.addStillObject(new Portal(j, i, Sprite.portal.getFxImage()));
+                        board.addStillObject(new Brick(j, i, Sprite.brick.getFxImage()));
                         break;
                     case '*': // them brick;
-                        // TODO: add;
+                        board.addStillObject(new Brick(j, i, Sprite.brick.getFxImage()));
                         break;
                     case 'p': //them Bomber
-                        board.addEntity(new Bomber(j, i, Sprite.player_down.getFxImage()));
+                        board.createBomber(j, i, Sprite.player_down.getFxImage());
                         break;
                     case '1': //them Balloon
-                        // TODO: add;
+                        board.addEntity(new Balloon(j, i, Sprite.balloom_left1.getFxImage(), 1));
                         break;
                     case  '2': //them Oneal
-                        // TODO: add;
+                        board.addEntity(new Oneal(j, i, Sprite.oneal_right1.getFxImage(), 1));
                         break;
                     case  '3': //them doll
-                        // TODO: add;
+                        board.addEntity(new Doll(j, i, Sprite.doll_left1.getFxImage(), 1, board.getBomber()));
                         break;
                     case 'b': //them BomItem
-                        // TODO: add;
+                        board.addStillObject(new BombItem(j, i, Sprite.powerup_bombs.getFxImage()));
+                        board.addStillObject(new Brick(j, i, Sprite.brick.getFxImage()));
                         break;
                     case 's': //them SpeedItem
-                        // TODO: add;
+                        board.addStillObject(new SpeedItem(j, i, Sprite.powerup_bombs.getFxImage()));
+                        board.addStillObject(new Brick(j, i, Sprite.brick.getFxImage()));
                         break;
                     case 'f': //them FlameItem
-                        // TODO: add;
-                        break;
+                        board.addStillObject(new FlameItem(j, i, Sprite.powerup_bombs.getFxImage()));
+                        board.addStillObject(new Brick(j, i, Sprite.brick.getFxImage()));
                 }
             }
         }

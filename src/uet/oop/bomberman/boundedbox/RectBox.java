@@ -1,21 +1,17 @@
 package uet.oop.bomberman.boundedbox;
 
-import javafx.geometry.Rectangle2D;
-import uet.oop.bomberman.graphics.Sprite;
 
 public class RectBox {
-    int minX;
-    int minY;
-    int maxX;
-    int maxY;
-//    RectBox rectBox;
+    private int minX;
+    private int minY;
+    private int maxX;
+    private int maxY;
 
     public RectBox(int x, int y, int width, int height) {
         this.minX = x;
         this.minY = y;
         this.maxX = width;
         this.maxY = height;
-    //    this.rectBox = new RectBox(minX, minY, maxX, maxY);
     }
 
 
@@ -40,13 +36,7 @@ public class RectBox {
         this.maxY = maxY;
     }
 
-    /**
-    public void setPosition(int x, int y, double reductionPercent) {
-        this.minX = x + (int)(Sprite.SCALED_SIZE * reductionPercent);
-        this.minY = y + (int)(Sprite.SCALED_SIZE * reductionPercent);
-        boundary = new Rectangle2D(this.minX, this.minY, maxX, maxY);
-    }
-     */
+
     public void setPosition(int x, int y) {
         int oldX = this.minX;
         int oldY = this.minY;

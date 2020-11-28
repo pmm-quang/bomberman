@@ -17,62 +17,48 @@ public abstract class MovingEntity extends Entity{
     protected int steps;
     protected int timeDie;
     protected boolean isLive;
+    protected int hp;
     protected Direction currentDirection;
+    protected int MAX_STEPS;
 
     public MovingEntity(int xUnit, int yUnit, Image img) {
         super(xUnit, yUnit, img);
         isLive = true;
+        MAX_STEPS = 0;
     }
 
-    public void move(List<Entity> entities) {
-        int index = (int) ((BombermanGame.time % (2 * 0.1)) / 0.1);
-        if (steps > 0) {
-            switch (currentDirection) {
-                case UP:
-                    if (!this.canMove(this.x, this.y - speed, entities)) {
-                        this.y -= speed;
-                        steps --;
-                        this.setImg(spriteUp[index].getFxImage());
-                    } else {
-                        steps = 0;
-                    }
-                    break;
-                case DOWN:
-                    if (!this.canMove(this.x, this.y + speed, entities)) {
-                        this.y += speed;
-                        steps--;
-                        this.setImg(spriteDown[index].getFxImage());
-                    } else {
-                        steps = 0;
-                    }
-                    break;
-                case LEFT:
-                    if (!this.canMove(this.x - speed, this.y, entities)) {
-                        this.x -= speed;
-                        steps--;
-                        this.setImg(spriteLeft[index].getFxImage());
-                    } else {
-                        steps = 0;
-                    }
-                    break;
-                case RIGHT:
-                    if (!this.canMove(this.x + speed, this.y, entities)) {
-                        this.x += speed;
-                        steps--;
-                        this.setImg(spriteRight[index].getFxImage());
-                    } else {
-                        steps = 0;
-                    }
-                    break;
-            }
-        }
-    }
+    public abstract void move(List<Entity> entities, double time);
 
     public abstract boolean canMove(int x, int y, List<Entity> other);
 
+    public void setImage(int index) {
+        switch (currentDirection) {
+            case UP:
+                this.setImg(spriteUp[index].getFxImage());
+                break;
+            case DOWN:
+                this.setImg(spriteDown[index].getFxImage());
+                break;
+            case RIGHT:
+                this.setImg(spriteRight[index].getFxImage());
+                break;
+            case LEFT:
+                this.setImg(spriteLeft[index].getFxImage());
+                break;
+        }
+    }
 
     public abstract void dead(double start, double time);
 
     public abstract boolean isLives();
+
+    public int getHp() {
+        return hp;
+    }
+
+    public void setSteps(int steps) {
+        this.steps = steps;
+    }
+
 
 }

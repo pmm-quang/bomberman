@@ -2,8 +2,6 @@ package uet.oop.bomberman.entities;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.util.Duration;
-import uet.oop.bomberman.boundedbox.RectBoundedBox;
 import uet.oop.bomberman.boundedbox.RectBox;
 import uet.oop.bomberman.graphics.Sprite;
 
@@ -39,10 +37,12 @@ public abstract class Entity {
         this.img = img;
     }
 
-    public abstract RectBoundedBox boundedBox();
-
     public RectBox getRectBox() {
         return rectBox;
+    }
+
+    public void setRectBox(RectBox rectBox) {
+        this.rectBox = rectBox;
     }
 
     public abstract boolean isColliding(Entity other);

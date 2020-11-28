@@ -2,7 +2,6 @@ package uet.oop.bomberman.entities.Boms;
 
 import javafx.scene.image.Image;
 import uet.oop.bomberman.Board;
-import uet.oop.bomberman.boundedbox.RectBoundedBox;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.graphics.Sprite;
 
@@ -28,10 +27,6 @@ public class Flame extends Entity {
     }
 
 
-    @Override
-    public RectBoundedBox boundedBox() {
-        return null;
-    }
 
     @Override
     public boolean isColliding(Entity other) {

@@ -1,5 +1,6 @@
 package uet.oop.bomberman;
 
+import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -9,21 +10,11 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import sun.corba.Bridge;
-import uet.oop.bomberman.entities.Brick;
-import uet.oop.bomberman.entities.enemy.Balloon;
-import uet.oop.bomberman.entities.enemy.Enemy;
-import uet.oop.bomberman.entities.enemy.Oneal;
-import uet.oop.bomberman.entities.player.Bomber;
-import uet.oop.bomberman.entities.Entity;
-import uet.oop.bomberman.entities.Grass;
-import uet.oop.bomberman.entities.Wall;
 import uet.oop.bomberman.graphics.Sprite;
-
-import java.util.ArrayList;
-import java.util.List;
+import uet.oop.bomberman.lever.FileManagement;
 
 public class BombermanGame extends Application {
 
@@ -49,12 +40,14 @@ public class BombermanGame extends Application {
     public static  double time;
     private GraphicsContext gc;
     private Canvas canvas;
+    private Board board = new Board();
+    private FileManagement fileManagement = new FileManagement(board);
+    /**
     private List<Enemy> entities = new ArrayList<>();
     private List<Entity> stillObjects = new ArrayList<>();
     Bomber bomberman;
     Enemy balloon = new Balloon(3, 6, Sprite.balloom_left1.getFxImage(), 1);
-    Enemy oneal = new Oneal(4, 7, Sprite.balloom_left1.getFxImage(),  1);
-
+     */
     public static void main(String[] args) {
         Application.launch(BombermanGame.class);
     }
@@ -70,7 +63,7 @@ public class BombermanGame extends Application {
         root.getChildren().add(canvas);
 
         // Tao scene
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root,Color.GREEN);
      //   scene.setFill(Color.GREEN);
 
         // Them scene vao stage
@@ -78,79 +71,55 @@ public class BombermanGame extends Application {
 
         stage.show();
         createMap();
-
-        Timeline gameLoop = new Timeline();
-        gameLoop.setCycleCount(Timeline.INDEFINITE);
-     //   gameLoop.setDelay(Duration.millis(300));
+        board.getBomber().input(scene, board.getStillObjects());
         final long timeStart = System.currentTimeMillis();
-        KeyFrame kf = new KeyFrame(
-                Duration.seconds(0.017), new EventHandler<ActionEvent>() {
+        AnimationTimer animationTimer = new AnimationTimer() {
             @Override
-            public void handle(ActionEvent event) {
-                time  = (System.currentTimeMillis() - timeStart) / 1000.0;
-                bomberman.input(scene, stillObjects);
-                bomberman.move(stillObjects);
-                for (int i = 0; i < entities.size(); i++) {
-                    entities.get(i).calculateMove(stillObjects, time);
-                    entities.get(i).move(stillObjects);
-                }
-
-                render();
-
+            public void handle(long now) {
+                time = (System.currentTimeMillis() - timeStart) / 1000.0;
                 update();
+                render();
             }
-        });
-        gameLoop.getKeyFrames().add(kf);
-        gameLoop.play();
+        };
+        animationTimer.start();
+
     }
 
     public void createMap() {
-        for (int i = 0; i < MAP.length; i++) {
-            for (int j = 0; j < MAP[i].length(); j++) {
-                char c = MAP[i].charAt(j);
-                switch (c) {
-                    case '#' :
-                        stillObjects.add(new Wall(j, i, Sprite.wall.getFxImage()));
-                        break;
-                    case '*' :
-                        stillObjects.add(new Grass(j, i, Sprite.grass.getFxImage()));
-                        stillObjects.add(new Brick(j, i, Sprite.brick.getFxImage()));
-                        break;
-                    case 'x' :
-                        stillObjects.add(new Brick(j, i, Sprite.brick.getFxImage()));
-                        break;
-                    case 'p' :
-                        stillObjects.add(new Grass(j, i, Sprite.grass.getFxImage()));
-                        bomberman = new Bomber(j, i, Sprite.player_down.getFxImage());
-                        break;
-                    case '1' :
-                        stillObjects.add(new Grass(j, i, Sprite.grass.getFxImage()));
-                        entities.add(new Balloon(j, i, Sprite.balloom_left1.getFxImage(), 1));
-                        break;
-                    case '2' :
-                        stillObjects.add(new Grass(j, i, Sprite.grass.getFxImage()));
-                        entities.add(new Oneal(j, i, Sprite.oneal_right1.getFxImage(), 1));
-                        break;
-                    case ' ' :
-                        stillObjects.add(new Grass(j, i, Sprite.grass.getFxImage()));
-                        break;
-                    case 'f' :
-                        stillObjects.add(new Grass(j, i, Sprite.grass.getFxImage()));
-                        break;
-                }
+        fileManagement.ReadFromFile(1);
+        fileManagement.createEntities();
 
-            }
-        }
     }
 
     public void update() {
+       board.getBomber().update(board.getStillObjects(), time);
+        int l = board.getEnemies().size();
+        for(int i = 0; i < l; i++) {
+            board.getEnemies().get(i).move(board.getStillObjects(), time);
+        }
+        /**
+        bomberman.move(stillObjects, time);
+        for (int i = 0; i < entities.size(); i++) {
+            entities.get(i).move(stillObjects, time);
+            if (entities.get(i) instanceof Oneal) {
+                ((Oneal) entities.get(i)).getPosition(bomberman);
+            }
+        }
+         */
+
     }
 
     public void render() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        board.getStillObjects().forEach(g -> g.render(gc));
+        board.getEnemies().forEach(g ->g.render(gc));
+        board.getBomber().render(gc);
+        board.getBomber().getBoms().forEach(g->g.render(gc));
+        /**
         stillObjects.forEach(g -> g.render(gc));
 
         entities.forEach(g -> g.render(gc)); // cái đống này lưu tạm bom
        bomberman.render(gc);
+         */
     }
 }

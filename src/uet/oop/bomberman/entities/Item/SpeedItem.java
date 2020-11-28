@@ -1,11 +1,11 @@
-package uet.oop.bomberman.entities;
+package uet.oop.bomberman.entities.Item;
 
 import javafx.scene.image.Image;
+import uet.oop.bomberman.entities.Entity;
 
-public class Grass extends Entity {
-    public Grass(int xUnit, int yUnit, Image img) {
+public class SpeedItem extends Item {
+    public SpeedItem(int xUnit, int yUnit, Image img) {
         super(xUnit, yUnit, img);
-     //   this.rectBox = new RectBox(this.x, this.y, 32, 32);
     }
 
     @Override
