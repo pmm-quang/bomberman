@@ -20,6 +20,11 @@ public class Bom extends Entity {
     }
 
     @Override
+    public boolean isColliding(Entity other) {
+        return false;
+    }
+
+    @Override
     public void update(double time) {
         int index = (int)((time % (boms.length * 0.1)) / 0.1);
         img = boms[index].getFxImage();

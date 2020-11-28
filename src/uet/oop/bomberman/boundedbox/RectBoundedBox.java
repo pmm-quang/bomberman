@@ -45,4 +45,10 @@ public class RectBoundedBox {
     public void setMaxY(int maxY) {
         this.maxY = maxY;
     }
+    public void setPostion(int x, int y) {
+        setMinX(x);
+        setMinY(y);
+        setMaxX(this.maxX + (x - this.minX));
+        setMaxY(this.minY + (y - this.minY));
+    }
 }

@@ -1,23 +1,17 @@
-package uet.oop.bomberman.entities.Boms;
+package uet.oop.bomberman.entities;
 
 import javafx.scene.image.Image;
 import uet.oop.bomberman.boundedbox.RectBoundedBox;
-import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.graphics.Sprite;
 
-public class FlameSegment extends Entity {
-
-    protected boolean last;
-
-
-    public FlameSegment(int x, int y, Image img) {
-        super(x, y, img);
+public class Brick extends Entity {
+    public Brick(int xUnit, int yUnit, Image img) {
+        super(xUnit, yUnit, img);
     }
-
 
     @Override
     public RectBoundedBox boundedBox() {
-        return null;
+        return new RectBoundedBox(x + 1, y + 1, x + Sprite.SCALED_SIZE - 2, y + Sprite.SCALED_SIZE - 2);
     }
 
     @Override

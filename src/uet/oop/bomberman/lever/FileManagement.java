@@ -1,7 +1,7 @@
 package uet.oop.bomberman.lever;
 
 import uet.oop.bomberman.Board;
-import uet.oop.bomberman.entities.Bomber;
+import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.entities.Wall;
 import uet.oop.bomberman.graphics.Sprite;
 

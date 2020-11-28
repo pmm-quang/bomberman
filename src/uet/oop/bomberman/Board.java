@@ -2,6 +2,7 @@ package uet.oop.bomberman;
 
 import uet.oop.bomberman.entities.Boms.Bom;
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.Wall;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,4 +16,6 @@ public class Board {
     public void addEntity(Entity entity) {
         entities.add(entity);
     }
+
+
 }

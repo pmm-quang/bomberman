@@ -34,6 +34,11 @@ public class Flame extends Entity {
     }
 
     @Override
+    public boolean isColliding(Entity other) {
+        return false;
+    }
+
+    @Override
     public void update(double time) {
 
     }

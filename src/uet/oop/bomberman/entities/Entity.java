@@ -4,6 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 import uet.oop.bomberman.boundedbox.RectBoundedBox;
+import uet.oop.bomberman.boundedbox.RectBox;
 import uet.oop.bomberman.graphics.Sprite;
 
 public abstract class Entity {
@@ -14,6 +15,7 @@ public abstract class Entity {
     protected int y;
 
     protected Image img;
+    protected RectBox rectBox;
 
 
 
@@ -22,6 +24,7 @@ public abstract class Entity {
         this.x = xUnit * Sprite.SCALED_SIZE;
         this.y = yUnit * Sprite.SCALED_SIZE;
         this.img = img;
+        this.rectBox = new RectBox(this.x + 2, this.y + 2, this.x + Sprite.SCALED_SIZE - 4, this.y + Sprite.SCALED_SIZE - 4);
     }
 
     public int getX() {
@@ -32,14 +35,17 @@ public abstract class Entity {
         return y;
     }
 
+    public void setImg(Image img) {
+        this.img = img;
+    }
 
     public abstract RectBoundedBox boundedBox();
 
-
-
-    public boolean isColliding(Entity other) {
-        return boundedBox().isColliding(other.boundedBox());
+    public RectBox getRectBox() {
+        return rectBox;
     }
+
+    public abstract boolean isColliding(Entity other);
 
 
     public void render(GraphicsContext gc) {
