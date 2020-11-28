@@ -22,10 +22,12 @@ import java.util.List;
 public class Bomber extends MovingEntity {
 
     private boolean haveBom;
-    Direction currentDirection;
 
     public Bomber(int x, int y, Image img) {
         super( x, y, img);
+        this.steps = 0;
+        this.speed = 1;
+        currentDirection = Direction.DOWN;
         spriteUp = new Sprite[] {Sprite.player_up_1, Sprite.player_up_2, Sprite.player_up};
         spriteDown = new Sprite[] {Sprite.player_down_1, Sprite.player_down_2,Sprite.player_down};
         spriteLeft = new Sprite[] {Sprite.player_left_1, Sprite.player_left_2, Sprite.player_left};
@@ -35,38 +37,6 @@ public class Bomber extends MovingEntity {
 
     }
 
-    @Override
-    public void move(int steps, List<Entity> entities) {
-        int index = (int) ((BombermanGame.time % (2 * 0.1)) / 0.1);
-        if (steps != 0 && currentDirection!= null) {
-            switch (currentDirection) {
-                case UP:
-                    if (!this.canMove(this.x, this.y - steps, entities )) {
-                        this.y -= steps;
-                        this.setImage(spriteUp[index].getFxImage());
-                    }
-                    break;
-                case DOWN:
-                    if (!this.canMove(this.x, this.y + steps, entities)) {
-                        this.y += steps;
-                        this.setImage(spriteDown[index].getFxImage());
-                    }
-                    break;
-                case LEFT:
-                    if (!this.canMove(this.x - steps, this.y, entities )) {
-                        this.x -= steps;
-                        this.setImage(spriteLeft[index].getFxImage());
-                    }
-                    break;
-                case RIGHT:
-                    if (!this.canMove(this.x + steps, this.y, entities)) {
-                        this.x += steps;
-                        this.setImage(spriteRight[index].getFxImage());
-                    }
-                    break;
-            }
-        }
-    }
 
     @Override
     public boolean canMove(int x, int y, List<Entity> other) {
@@ -122,9 +92,6 @@ public class Bomber extends MovingEntity {
         this.img = img;
     }
 
-    public void setMoveLeft(boolean moveLeft) {
-        this.moveLeft = moveLeft;
-    }
 
     public void input(Scene scene, List<Entity> entities) {
         if (isLives()) {
@@ -135,16 +102,16 @@ public class Bomber extends MovingEntity {
                         public void handle(KeyEvent event) {
                             if (event.getCode() == KeyCode.LEFT) {
                                 currentDirection = Direction.LEFT;
-                            //    move(5,entities);
+                                steps = BombermanGame.WIDTH * Sprite.SCALED_SIZE;
                             } else if (event.getCode() == KeyCode.RIGHT) {
                                 currentDirection = Direction.RIGHT;
-                            //    move(5,entities);
+                                steps = BombermanGame.WIDTH * Sprite.SCALED_SIZE;
                             } else if (event.getCode() == KeyCode.UP) {
                                 currentDirection = Direction.UP;
-                            //    move(5,entities);
+                                steps = BombermanGame.WIDTH * Sprite.SCALED_SIZE;
                             } else if (event.getCode() == KeyCode.DOWN) {
                                 currentDirection = Direction.DOWN;
-                            //    move(5,entities);
+                                steps = BombermanGame.WIDTH * Sprite.SCALED_SIZE;
                             }
                             if (event.getCode() == KeyCode.A) {
                                 haveBom = true;
@@ -155,18 +122,18 @@ public class Bomber extends MovingEntity {
                     new EventHandler<KeyEvent>() {
                         public void handle(KeyEvent e) {
                             if (e.getCode() == KeyCode.LEFT) {
-                                currentDirection = null;
+                                steps = 0;
                                 img = spriteLeft[2].getFxImage();
                             } else if (e.getCode() == KeyCode.RIGHT) {
                                 img = spriteRight[2].getFxImage();
-                                currentDirection = null;
+                                steps = 0;
                             } else if (e.getCode() == KeyCode.UP) {
 
                                 img = spriteUp[2].getFxImage();
-                                currentDirection = null;
+                                steps = 0;
                             } else if (e.getCode() == KeyCode.DOWN) {
                                 img = spriteDown[2].getFxImage();
-                                currentDirection = null;
+                                steps = 0;
                             }
                         }
                     });

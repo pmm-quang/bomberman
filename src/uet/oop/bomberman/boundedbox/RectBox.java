@@ -48,10 +48,12 @@ public class RectBox {
     }
      */
     public void setPosition(int x, int y) {
+        int oldX = this.minX;
+        int oldY = this.minY;
         setMinX(x);
         setMinY(y);
-        setMaxX(minX + 30);
-        setMaxY(minY + 30);
+        setMaxX(this.maxX + (x - oldX));
+        setMaxY(this.maxY + (y - oldY));
 
     }
 }

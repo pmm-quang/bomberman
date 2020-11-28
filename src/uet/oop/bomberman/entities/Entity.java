@@ -24,7 +24,7 @@ public abstract class Entity {
         this.x = xUnit * Sprite.SCALED_SIZE;
         this.y = yUnit * Sprite.SCALED_SIZE;
         this.img = img;
-        this.rectBox = new RectBox(this.x + 2, this.y + 2, this.x + Sprite.SCALED_SIZE - 4, this.y + Sprite.SCALED_SIZE - 4);
+        this.rectBox = new RectBox(this.x + 1, this.y + 1, this.x + Sprite.SCALED_SIZE - 2, this.y + Sprite.SCALED_SIZE - 2);
     }
 
     public int getX() {

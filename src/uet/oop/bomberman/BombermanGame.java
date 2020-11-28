@@ -89,7 +89,11 @@ public class BombermanGame extends Application {
             public void handle(ActionEvent event) {
                 time  = (System.currentTimeMillis() - timeStart) / 1000.0;
                 bomberman.input(scene, stillObjects);
-                bomberman.move(1, stillObjects);
+                bomberman.move(stillObjects);
+                for (int i = 0; i < entities.size(); i++) {
+                    entities.get(i).calculateMove(stillObjects, time);
+                    entities.get(i).move(stillObjects);
+                }
 
                 render();
 

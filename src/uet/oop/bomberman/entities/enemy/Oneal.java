@@ -13,7 +13,6 @@ import java.util.List;
 public class Oneal extends Enemy {
     public Oneal(int xUnit, int yUnit, Image img, int speed) {
         super(xUnit, yUnit, img, speed);
-        moveLeft = true;
         spriteUp = new Sprite[] {Sprite.balloom_left1, Sprite.balloom_left3, Sprite.balloom_right2};
         spriteDown = new Sprite[] {Sprite.balloom_right1, Sprite.balloom_right3, Sprite.balloom_left2};
         spriteLeft = new Sprite[] {Sprite.balloom_left1, Sprite.balloom_left2, Sprite.balloom_left3};
@@ -22,12 +21,12 @@ public class Oneal extends Enemy {
     }
 
     @Override
-    public void calculateDirection(Entity other, double time) {
+    public void calculateMove(List<Entity> entities, double time) {
 
     }
 
     @Override
-    public void move(int steps, List<Entity> entities) {
+    public void move(List<Entity> entities) {
 
     }
 
