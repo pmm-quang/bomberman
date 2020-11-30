@@ -10,11 +10,16 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.lever.FileManagement;
+import uet.oop.bomberman.sound.Sound;
+
+import java.io.File;
 
 public class BombermanGame extends Application {
 
@@ -68,21 +73,24 @@ public class BombermanGame extends Application {
 
         // Them scene vao stage
         stage.setScene(scene);
-
+        Sound.play("soundtrack");
         stage.show();
         createMap();
         board.getBomber().input(scene, board.getStillObjects());
         final long timeStart = System.currentTimeMillis();
-        AnimationTimer animationTimer = new AnimationTimer() {
+        Timeline timer = new Timeline();
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.setAutoReverse(true);
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.017), new EventHandler<ActionEvent>() {
             @Override
-            public void handle(long now) {
+            public void handle(ActionEvent event) {
                 time = (System.currentTimeMillis() - timeStart) / 1000.0;
                 update();
                 render();
             }
-        };
-        animationTimer.start();
-
+        });
+        timer.getKeyFrames().add(keyFrame);
+        timer.play();
     }
 
     public void createMap() {

@@ -14,6 +14,7 @@ public abstract class Entity {
 
     protected Image img;
     protected RectBox rectBox;
+    protected boolean removed = false;
 
 
 
@@ -39,6 +40,10 @@ public abstract class Entity {
 
     public RectBox getRectBox() {
         return rectBox;
+    }
+
+    public boolean isRemoved() {
+        return removed;
     }
 
     public void setRectBox(RectBox rectBox) {

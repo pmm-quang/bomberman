@@ -16,6 +16,7 @@ public class FlameSegment extends Entity {
 
     @Override
     public boolean isColliding(Entity other) {
+
         return false;
     }
 

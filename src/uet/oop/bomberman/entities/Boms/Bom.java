@@ -19,7 +19,7 @@ public class Bom extends Entity {
 
     @Override
     public boolean isColliding(Entity other) {
-        return false;
+        return  (this.rectBox.checkCollision(other.getRectBox()));
     }
 
     @Override

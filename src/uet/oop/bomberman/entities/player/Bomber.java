@@ -14,6 +14,7 @@ import uet.oop.bomberman.entities.Grass;
 import uet.oop.bomberman.entities.Item.Item;
 import uet.oop.bomberman.entities.MovingEntity;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.sound.Sound;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,18 +88,13 @@ public class Bomber extends MovingEntity {
     }
 
     @Override
-    public void dead(double start, double time) {
-        double t =  time - start;
-        if (t > 0 && t <= 1) {
-            this.setImg(spriteDead[0].getFxImage());
-        } else if (t > 1 && t <= 2) {
-            this.setImg(spriteDead[1].getFxImage());
-        } else if (t > 2 && t < 3) {
-            this.setImg(spriteDead[2].getFxImage());
-        } else {
-            hp --;
-            if (hp > 0) {
-                isLive = true;
+    public void dead() {
+        if (!isLive) {
+            int index = timeDie / 10;
+            setImg(spriteDead[index].getFxImage());
+            timeDie++;
+            if (timeDie > 28) {
+                removed = true;
             }
         }
     }
@@ -126,7 +122,7 @@ public class Bomber extends MovingEntity {
 
     public void update(List<Entity> entities,double time) {
         move(entities, time);
-        createBom(time);
+    //    createBom(time);
         for (int i = 0; i < boms.size(); i++) {
             if (boms.get(i).isBang()) {
                 boms.remove(i);
@@ -160,6 +156,7 @@ public class Bomber extends MovingEntity {
                             }
                             if (event.getCode() == KeyCode.SPACE) {
                                 createBom = true;
+                                createBom();
                             }
                         }
 
@@ -181,6 +178,7 @@ public class Bomber extends MovingEntity {
                                 steps = 0;
                             } else if (e.getCode() == KeyCode.SPACE) {
                                 createBom = false;
+                                Sound.stop("BOM_SET");
                             }
                         }
                     });
@@ -190,7 +188,7 @@ public class Bomber extends MovingEntity {
 
 
 
-    public void createBom(double time) {
+    public void createBom() {
         if (createBom) {
             if (boms.size() == maxNumberBom) {
                 createBom = false;
@@ -203,19 +201,18 @@ public class Bomber extends MovingEntity {
             int countY = this.getY() % Sprite.SCALED_SIZE;
             if (countX > 15) realX++;
             if (countY > 15) realY++;
+
+            Bom bom = new Bom(realX, realY, Sprite.bomb.getFxImage(),BombermanGame.time);
             for (int i = 0; i < boms.size(); i++) {
-                if (boms.get(i).getX() == realX && boms.get(i).getY() == realY) {
-                    createBom = false;
+                if (bom.isColliding(boms.get(i))) {
                     System.out.println(false);
                     return;
                 }
             }
-            System.out.println(true);
-            Bom bom = new Bom(realX, realY, Sprite.bomb.getFxImage(), time);
             boms.add(bom);
+            Sound.play("BOM_SET");
             createBom = false;
         }
-
     }
 
     public boolean isCreateBom() {
@@ -225,6 +222,11 @@ public class Bomber extends MovingEntity {
     public void setMaxNumberBom(int maxNumberBom) {
         this.maxNumberBom = maxNumberBom;
     }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
 
     public List<Bom> getBoms() {
         return boms;

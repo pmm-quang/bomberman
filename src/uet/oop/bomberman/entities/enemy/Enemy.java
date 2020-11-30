@@ -31,17 +31,20 @@ public abstract class Enemy extends MovingEntity {
     public boolean isLives() {
         if (hp <= 0) {
             isLive = false;
+            setSteps(0);
         }
         return isLive;
     }
 
 
     @Override
-    public void dead(double start, double time) {
-        if ( time - start <= 1) {
-            this.setImg(spriteDead[0].getFxImage());
-        } else {
-            this.setImg(null);
+    public void dead() {
+        if (!isLives()) {
+            if (timeDie < 15) {
+                setImg(spriteDead[0].getFxImage());
+            } else {
+                removed = true;
+            }
         }
     }
 

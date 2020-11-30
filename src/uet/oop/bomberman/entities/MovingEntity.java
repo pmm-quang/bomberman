@@ -48,7 +48,7 @@ public abstract class MovingEntity extends Entity{
         }
     }
 
-    public abstract void dead(double start, double time);
+    public abstract void dead();
 
     public abstract boolean isLives();
 
@@ -59,6 +59,7 @@ public abstract class MovingEntity extends Entity{
     public void setSteps(int steps) {
         this.steps = steps;
     }
+
 
 
 }
