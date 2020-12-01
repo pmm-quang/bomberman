@@ -11,10 +11,12 @@ import uet.oop.bomberman.boundedbox.RectBox;
 import uet.oop.bomberman.direction.Direction;
 import uet.oop.bomberman.entities.Boms.Bom;
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.Grass;
 import uet.oop.bomberman.entities.Item.Item;
 import uet.oop.bomberman.entities.MovingEntity;
 import uet.oop.bomberman.entities.enemy.Enemy;
 import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.lever.FileManagement;
 import uet.oop.bomberman.sound.Sound;
 
 import java.util.ArrayList;
@@ -22,12 +24,10 @@ import java.util.List;
 
 public class Bomber extends MovingEntity {
 
-    private List<Bom> boms;
     private boolean createBom;
 
     public Bomber(int x, int y, Image img) {
         super( x, y, img);
-        boms = new ArrayList<>();
         this.steps = 0;
         this.speed = 2;
         this.hp = 3;
@@ -110,6 +110,7 @@ public class Bomber extends MovingEntity {
 
     @Override
     public boolean isColliding(Entity other) {
+        if (other instanceof Grass) return false;
         if (this.getRectBox().checkCollision(other.getRectBox())) {
             if (other instanceof Item) {
                  return false;
@@ -121,60 +122,6 @@ public class Bomber extends MovingEntity {
         }
        return this.getRectBox().checkCollision(other.getRectBox());
     }
-
-    public void input(Scene scene) {
-        if (isLives()) {
-            scene.setOnKeyPressed(
-                    new EventHandler<KeyEvent>() {
-
-                        @Override
-                        public void handle(KeyEvent event) {
-                            if (event.getCode() == KeyCode.LEFT) {
-                                currentDirection = Direction.LEFT;
-                                steps = BombermanGame.WIDTH * Sprite.SCALED_SIZE;
-                            } else if (event.getCode() == KeyCode.RIGHT) {
-                                currentDirection = Direction.RIGHT;
-                                steps = BombermanGame.WIDTH * Sprite.SCALED_SIZE;
-                            } else if (event.getCode() == KeyCode.UP) {
-                                currentDirection = Direction.UP;
-                                steps = BombermanGame.WIDTH * Sprite.SCALED_SIZE;
-                            } else if (event.getCode() == KeyCode.DOWN) {
-                                currentDirection = Direction.DOWN;
-                                steps = BombermanGame.WIDTH * Sprite.SCALED_SIZE;
-                            }
-                            if (event.getCode() == KeyCode.SPACE) {
-                                createBom = true;
-                                if (createBom() != null)
-                                Board.getBomList().add(createBom());
-                            }
-                        }
-
-                    });
-            scene.setOnKeyReleased(
-                    new EventHandler<KeyEvent>() {
-                        public void handle(KeyEvent e) {
-                            if (e.getCode() == KeyCode.LEFT) {
-                                steps = 0;
-                                img = spriteLeft[2].getFxImage();
-                            } else if (e.getCode() == KeyCode.RIGHT) {
-                                img = spriteRight[2].getFxImage();
-                                steps = 0;
-                            } else if (e.getCode() == KeyCode.UP) {
-                                img = spriteUp[2].getFxImage();
-                                steps = 0;
-                            } else if (e.getCode() == KeyCode.DOWN) {
-                                img = spriteDown[2].getFxImage();
-                                steps = 0;
-                            } else if (e.getCode() == KeyCode.SPACE) {
-                                createBom = false;
-                                Sound.stop("BOM_SET");
-                            }
-                        }
-                    });
-        }
-
-    }
-
 
 
     public Bom createBom() {
@@ -209,7 +156,11 @@ public class Bomber extends MovingEntity {
         this.speed = speed;
     }
 
-    public List<Bom> getBoms() {
-        return boms;
+    public void setDirection(Direction direction) {
+        currentDirection = direction;
+    }
+
+    public void setCreateBom(boolean createBom) {
+        this.createBom = createBom;
     }
 }

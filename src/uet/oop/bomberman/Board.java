@@ -18,15 +18,18 @@ public class Board {
 
     private int level;
     public static int maxBom;
+    private boolean nextLv;
     private static List<MovingEntity> entities = new ArrayList<>();
     private static List<Entity> stillObjects = new ArrayList<>();
     private static List<Bom> bomList = new ArrayList<>();
+    private static Bomber bomber;
     FileManagement fileManagement;
 
     public Board() {
         loadLevel(1);
         level = 1;
         maxBom = 3;
+        nextLv = false;
     }
 
     public void update() {
@@ -34,6 +37,7 @@ public class Board {
         entities.forEach(g->g.update(BombermanGame.time));
         stillObjects.forEach(g->g.update(BombermanGame.time));
         bomList.forEach(g->g.update(BombermanGame.time));
+        bomber.update(BombermanGame.time);
 
         removeEntity();
 
@@ -72,7 +76,7 @@ public class Board {
         getStillObjects().forEach(g -> g.render(gc));
         getEntities().forEach(g ->g.render(gc));
         getBomList().forEach(g->g.render(gc));
-
+        bomber.render(gc);
 
     }
 
@@ -112,24 +116,20 @@ public class Board {
         return stillObjects;
     }
 
-    public Bomber getBomber() {
-        Iterator<MovingEntity> iterator = entities.iterator();
-        MovingEntity entity;
-        while(iterator.hasNext()) {
-            entity = iterator.next();
-            if (entity instanceof Bomber) {
-                return (Bomber) entity;
-            }
-        }
-        return null;
+    public static Bomber getBomber() {
+       return bomber;
+    }
+    public void createBomber(Bomber bombers) {
+        bomber = bombers;
     }
 
     public static List<Bom> getBomList() {
         return bomList;
     }
 
-    public void addBom(Entity bom) {
+    public static void addBom(Bom bom) {
         System.out.println(bomList.size());
+        bomList.add(bom);
     }
 
     public int getLevel() {

@@ -56,14 +56,13 @@ public abstract class MovingEntity extends Entity{
         return hp;
     }
 
-    public void setSteps(int steps) {
-        this.steps = steps;
+    public void setSteps(int step) {
+        steps = step;
     }
 
     public void update(double time) {
         move(time);
         dead();
     }
-
 
 }

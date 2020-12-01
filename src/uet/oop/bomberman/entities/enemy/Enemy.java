@@ -5,6 +5,7 @@ import uet.oop.bomberman.Board;
 import uet.oop.bomberman.direction.Direction;
 import uet.oop.bomberman.entities.Boms.FlameSegment;
 import uet.oop.bomberman.entities.Entity;
+import uet.oop.bomberman.entities.Grass;
 import uet.oop.bomberman.entities.MovingEntity;
 import uet.oop.bomberman.entities.enemy.move.EnemyDirection;
 
@@ -65,6 +66,7 @@ public abstract class Enemy extends MovingEntity {
 
     @Override
     public boolean isColliding(Entity other) {
+        if (other instanceof Grass) return false;
         if (other instanceof FlameSegment) {
             if (hp > 0) {
                 hp --;

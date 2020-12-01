@@ -1,6 +1,6 @@
 package uet.oop.bomberman;
 
-import com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -10,17 +10,20 @@ import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.sound.Sound;
+import uet.oop.bomberman.lever.FileManagement;
 
-import java.awt.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class BombermanGame extends Application {
 
@@ -38,12 +41,13 @@ public class BombermanGame extends Application {
             "# #*# # # # # # #*# # # # # # #",
             "#           *   *  *          #",
             "###############################"};
-    
-    public static final int WIDTH = 20;
-    public static final int HEIGHT = 15;
+
     public static  double time;
+    private int width;
+    private int height;
     private GraphicsContext gc;
-    Timeline timer;
+    private boolean pause = false;
+    public static Timeline timer;
     private Canvas canvas;
     private Board board = new Board();
     public static void main(String[] args) {
@@ -59,22 +63,24 @@ public class BombermanGame extends Application {
     @Override
     public void start(Stage stage) {
         // Tao Canvas
-        canvas = new Canvas(Sprite.SCALED_SIZE * MAP[0].length(), Sprite.SCALED_SIZE *MAP.length);
+        width = FileManagement.getWidth();
+        height = FileManagement.getHeight();
+        canvas = new Canvas(Sprite.SCALED_SIZE * width, Sprite.SCALED_SIZE * height);
         gc = canvas.getGraphicsContext2D();
 
         //add a scrolling camera
-        Rectangle player = new Rectangle(board.getBomber().getX(), board.getBomber().getY(), 0, 0);
+        Rectangle player = new Rectangle(Board.getBomber().getX(), Board.getBomber().getY(), 0, 0);
         // Tao root container
     //    Group root = new Group();
         Pane pane = new Pane(canvas);
+        Scene scene = new Scene(new BorderPane(pane),500, Sprite.SCALED_SIZE *MAP.length);
         pane.getChildren().add(player);
-        pane.setMinSize(Sprite.SCALED_SIZE * MAP[0].length(), Sprite.SCALED_SIZE *MAP.length );
-        pane.setPrefSize(Sprite.SCALED_SIZE * MAP[0].length(), Sprite.SCALED_SIZE *MAP.length);
-        pane.setMinSize(Sprite.SCALED_SIZE * MAP[0].length(), Sprite.SCALED_SIZE *MAP.length);
+
+        pane.setMinSize(Sprite.SCALED_SIZE * width, Sprite.SCALED_SIZE * height);
+        pane.setPrefSize(Sprite.SCALED_SIZE * width, Sprite.SCALED_SIZE * height);
+        pane.setMinSize(Sprite.SCALED_SIZE * width, Sprite.SCALED_SIZE * height);
     //    root.getChildren().add(canvas);
         Rectangle clip = new Rectangle();
-        // Tao scene
-        Scene scene = new Scene(new BorderPane(pane),600, Sprite.SCALED_SIZE *MAP.length,Color.GREEN);
         clip.widthProperty().bind(scene.widthProperty());
         clip.heightProperty().bind(scene.heightProperty());
         clip.xProperty().bind(Bindings.createDoubleBinding(() ->clampRange(player.getX() - scene.getWidth()/2
@@ -85,29 +91,28 @@ public class BombermanGame extends Application {
         pane.translateXProperty().bind(clip.xProperty().multiply(-1));
         pane.translateYProperty().bind(clip.yProperty().multiply(-1));
         //
-        // Them scene vao stage
-        stage.setScene(scene);
+
      //   Sound.play("soundtrack");
-        stage.show();
         final long timeStart = System.currentTimeMillis();
-        timer = new Timeline();
-        timer.setCycleCount(Timeline.INDEFINITE);
-        timer.setAutoReverse(true);
-        if (board.getBomber() != null) {
-            board.getBomber().input(scene);
-        }
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.017), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                time = (System.currentTimeMillis() - timeStart) / 1000.0;
-                board.update();
-                player.setX(board.getBomber().getX());
-                player.setY(board.getBomber().getY());
-                board.render(gc, canvas);
-            }
-        });
-        timer.getKeyFrames().add(keyFrame);
-        timer.play();
+
+        KeyBoard.input(scene);
+
+       timer = new Timeline(new KeyFrame(Duration.seconds(0.017), new EventHandler<ActionEvent>() {
+           @Override
+           public void handle(ActionEvent event) {
+               time = (System.currentTimeMillis() - timeStart) / 1000.0;
+                   board.update();
+                   board.render(gc, canvas);
+                   player.setX(Board.getBomber().getX());
+                   player.setY(Board.getBomber().getY());
+           }
+       }));
+       timer.setCycleCount(Animation.INDEFINITE);
+       timer.play();
+       scene.setFill(Color.BLACK);
+        stage.setScene(scene);
+        stage.show();
+
     }
 
 }
