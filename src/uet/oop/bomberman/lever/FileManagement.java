@@ -80,7 +80,7 @@ public class FileManagement{
                         board.addStillObject(new Brick(j, i, Sprite.brick.getFxImage()));
                         break;
                     case 'p': //them Bomber
-                        board.createBomber(j, i, Sprite.player_down.getFxImage());
+                        board.addEntity(new Bomber(j, i, Sprite.player_down.getFxImage()));
                         break;
                     case '1': //them Balloon
                         board.addEntity(new Balloon(j, i, Sprite.balloom_left1.getFxImage(), 1));

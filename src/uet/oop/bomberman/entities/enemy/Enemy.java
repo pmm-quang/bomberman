@@ -1,16 +1,12 @@
 package uet.oop.bomberman.entities.enemy;
 
 import javafx.scene.image.Image;
+import uet.oop.bomberman.Board;
 import uet.oop.bomberman.direction.Direction;
 import uet.oop.bomberman.entities.Boms.FlameSegment;
 import uet.oop.bomberman.entities.Entity;
-import uet.oop.bomberman.entities.Grass;
 import uet.oop.bomberman.entities.MovingEntity;
-import uet.oop.bomberman.entities.Wall;
 import uet.oop.bomberman.entities.enemy.move.EnemyDirection;
-import uet.oop.bomberman.graphics.Sprite;
-
-import java.util.List;
 
 public abstract class Enemy extends MovingEntity {
     protected boolean alive;
@@ -49,12 +45,17 @@ public abstract class Enemy extends MovingEntity {
     }
 
     @Override
-    public boolean canMove(int x, int y, List<Entity> other) {
+    public boolean canMove(int x, int y) {
         this.rectBox.setPosition(x, y);
-        for (Entity e : other) {
+        for (Entity e : Board.getBomList()) {
             if (this.isColliding(e)) {
                 this.rectBox.setPosition(this.x, this.y);
-                //    System.out.println(true);
+                return true;
+            }
+        }
+        for (Entity e : Board.getStillObjects()) {
+            if (this.isColliding(e)) {
+                this.rectBox.setPosition(this.x, this.y);
                 return true;
             }
         }
@@ -64,7 +65,6 @@ public abstract class Enemy extends MovingEntity {
 
     @Override
     public boolean isColliding(Entity other) {
-        if (other instanceof Grass) return false;
         if (other instanceof FlameSegment) {
             if (hp > 0) {
                 hp --;
@@ -75,7 +75,7 @@ public abstract class Enemy extends MovingEntity {
     }
 
     @Override
-    public void move(List<Entity> entities, double time) {
+    public void move(double time) {
         int index = (int)((time%(2 * 0.1)) / 0.1);
         if (steps <= 0) {
             enemyDirection.setDirection(enemyDirection.calculateDirection());
@@ -100,7 +100,7 @@ public abstract class Enemy extends MovingEntity {
                 xa += speed;
                 break;
         }
-        if (!canMove(this.x + xa, this.y + ya, entities)) {
+        if (!canMove(this.x + xa, this.y + ya)) {
             this.x += xa;
             this.y += ya;
             this.setImage(index);

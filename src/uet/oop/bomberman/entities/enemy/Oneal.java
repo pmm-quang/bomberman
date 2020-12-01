@@ -21,10 +21,6 @@ public class Oneal extends Enemy {
     }
 
 
-    @Override
-    public void update(double time) {
-    }
-
     public void getPosition(Bomber bomber) {
         enemyDirection.getPosition(bomber.getX(), bomber.getY(), x, y);
     }

@@ -29,6 +29,10 @@ public class Brick extends Entity {
 
     @Override
     public void update(double time) {
+        destroyed();
+    }
+
+    public void destroyed() {
         if (destroyed) {
             int index = timeDestroyed / 10;
             setImg(brickExploded[index].getFxImage());

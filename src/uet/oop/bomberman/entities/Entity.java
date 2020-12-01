@@ -52,10 +52,11 @@ public abstract class Entity {
 
     public abstract boolean isColliding(Entity other);
 
+    public abstract void update(double time);
 
     public void render(GraphicsContext gc) {
         gc.drawImage(img, x, y);
     }
-    public abstract void update(double time);
+//    public abstract void update(double time);
 
 }

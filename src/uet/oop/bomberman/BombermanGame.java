@@ -1,25 +1,26 @@
 package uet.oop.bomberman;
 
-import javafx.animation.AnimationTimer;
+import com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.lever.FileManagement;
 import uet.oop.bomberman.sound.Sound;
 
-import java.io.File;
+import java.awt.*;
 
 public class BombermanGame extends Application {
 
@@ -40,21 +41,19 @@ public class BombermanGame extends Application {
     
     public static final int WIDTH = 20;
     public static final int HEIGHT = 15;
-    public static double oldGameTime;
-    public static double startDeadtime;
     public static  double time;
     private GraphicsContext gc;
+    Timeline timer;
     private Canvas canvas;
     private Board board = new Board();
-    private FileManagement fileManagement = new FileManagement(board);
-    /**
-    private List<Enemy> entities = new ArrayList<>();
-    private List<Entity> stillObjects = new ArrayList<>();
-    Bomber bomberman;
-    Enemy balloon = new Balloon(3, 6, Sprite.balloom_left1.getFxImage(), 1);
-     */
     public static void main(String[] args) {
         Application.launch(BombermanGame.class);
+    }
+
+    private double clampRange(double value, double min, double max) {
+        if (value < min) return min ;
+        if (value > max) return max ;
+        return value ;
     }
 
     @Override
@@ -63,71 +62,52 @@ public class BombermanGame extends Application {
         canvas = new Canvas(Sprite.SCALED_SIZE * MAP[0].length(), Sprite.SCALED_SIZE *MAP.length);
         gc = canvas.getGraphicsContext2D();
 
+        //add a scrolling camera
+        Rectangle player = new Rectangle(board.getBomber().getX(), board.getBomber().getY(), 0, 0);
         // Tao root container
-        Group root = new Group();
-        root.getChildren().add(canvas);
-
+    //    Group root = new Group();
+        Pane pane = new Pane(canvas);
+        pane.getChildren().add(player);
+        pane.setMinSize(Sprite.SCALED_SIZE * MAP[0].length(), Sprite.SCALED_SIZE *MAP.length );
+        pane.setPrefSize(Sprite.SCALED_SIZE * MAP[0].length(), Sprite.SCALED_SIZE *MAP.length);
+        pane.setMinSize(Sprite.SCALED_SIZE * MAP[0].length(), Sprite.SCALED_SIZE *MAP.length);
+    //    root.getChildren().add(canvas);
+        Rectangle clip = new Rectangle();
         // Tao scene
-        Scene scene = new Scene(root,Color.GREEN);
-     //   scene.setFill(Color.GREEN);
-
+        Scene scene = new Scene(new BorderPane(pane),600, Sprite.SCALED_SIZE *MAP.length,Color.GREEN);
+        clip.widthProperty().bind(scene.widthProperty());
+        clip.heightProperty().bind(scene.heightProperty());
+        clip.xProperty().bind(Bindings.createDoubleBinding(() ->clampRange(player.getX() - scene.getWidth()/2
+                , 0, pane.getWidth() - scene.getWidth()), player.xProperty(), scene.widthProperty()));
+        clip.yProperty().bind(Bindings.createDoubleBinding(()-> clampRange(player.getY() - scene.getHeight()/2
+                , 0, pane.getHeight() - scene.getHeight()), player.yProperty(), scene.heightProperty()));
+        pane.setClip(clip);
+        pane.translateXProperty().bind(clip.xProperty().multiply(-1));
+        pane.translateYProperty().bind(clip.yProperty().multiply(-1));
+        //
         // Them scene vao stage
         stage.setScene(scene);
-        Sound.play("soundtrack");
+     //   Sound.play("soundtrack");
         stage.show();
-        createMap();
-        board.getBomber().input(scene, board.getStillObjects());
         final long timeStart = System.currentTimeMillis();
-        Timeline timer = new Timeline();
+        timer = new Timeline();
         timer.setCycleCount(Timeline.INDEFINITE);
         timer.setAutoReverse(true);
+        if (board.getBomber() != null) {
+            board.getBomber().input(scene);
+        }
         KeyFrame keyFrame = new KeyFrame(Duration.seconds(0.017), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 time = (System.currentTimeMillis() - timeStart) / 1000.0;
-                update();
-                render();
+                board.update();
+                player.setX(board.getBomber().getX());
+                player.setY(board.getBomber().getY());
+                board.render(gc, canvas);
             }
         });
         timer.getKeyFrames().add(keyFrame);
         timer.play();
     }
 
-    public void createMap() {
-        fileManagement.ReadFromFile(1);
-        fileManagement.createEntities();
-
-    }
-
-    public void update() {
-       board.getBomber().update(board.getStillObjects(), time);
-        int l = board.getEnemies().size();
-        for(int i = 0; i < l; i++) {
-            board.getEnemies().get(i).move(board.getStillObjects(), time);
-        }
-        /**
-        bomberman.move(stillObjects, time);
-        for (int i = 0; i < entities.size(); i++) {
-            entities.get(i).move(stillObjects, time);
-            if (entities.get(i) instanceof Oneal) {
-                ((Oneal) entities.get(i)).getPosition(bomberman);
-            }
-        }
-         */
-
-    }
-
-    public void render() {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        board.getStillObjects().forEach(g -> g.render(gc));
-        board.getEnemies().forEach(g ->g.render(gc));
-        board.getBomber().render(gc);
-        board.getBomber().getBoms().forEach(g->g.render(gc));
-        /**
-        stillObjects.forEach(g -> g.render(gc));
-
-        entities.forEach(g -> g.render(gc)); // cái đống này lưu tạm bom
-       bomberman.render(gc);
-         */
-    }
 }

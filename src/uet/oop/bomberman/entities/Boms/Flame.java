@@ -37,4 +37,5 @@ public class Flame extends Entity {
     public void update(double time) {
 
     }
+
 }

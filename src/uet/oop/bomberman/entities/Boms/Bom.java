@@ -27,9 +27,8 @@ public class Bom extends Entity {
         int index = (int)((time % (boms.length * 0.1)) / 0.1);
         img = boms[index].getFxImage();
         if (time - timeStart >= 3) {
-            bang = true;
+            removed = true;
         }
-
     }
 
     public boolean isBang() {

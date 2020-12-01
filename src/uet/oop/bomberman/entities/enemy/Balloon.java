@@ -1,13 +1,8 @@
 package uet.oop.bomberman.entities.enemy;
 
 import javafx.scene.image.Image;
-import uet.oop.bomberman.direction.Direction;
-import uet.oop.bomberman.entities.Entity;
-import uet.oop.bomberman.entities.Grass;
 import uet.oop.bomberman.entities.enemy.move.DirectionRandom;
 import uet.oop.bomberman.graphics.Sprite;
-
-import java.util.List;
 
 public class Balloon extends Enemy {
 
@@ -24,9 +19,4 @@ public class Balloon extends Enemy {
         spriteDead = new Sprite[] {Sprite.balloom_dead};
     }
 
-
-    @Override
-    public void update(double time) {
-
-    }
 }

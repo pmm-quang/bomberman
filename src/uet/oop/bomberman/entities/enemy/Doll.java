@@ -18,8 +18,4 @@ public class Doll extends Enemy {
         spriteDead = new Sprite[] {Sprite.balloom_dead};
     }
 
-    @Override
-    public void update(double time) {
-
-    }
 }

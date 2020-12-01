@@ -5,14 +5,15 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import uet.oop.bomberman.Board;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.boundedbox.RectBox;
 import uet.oop.bomberman.direction.Direction;
 import uet.oop.bomberman.entities.Boms.Bom;
 import uet.oop.bomberman.entities.Entity;
-import uet.oop.bomberman.entities.Grass;
 import uet.oop.bomberman.entities.Item.Item;
 import uet.oop.bomberman.entities.MovingEntity;
+import uet.oop.bomberman.entities.enemy.Enemy;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.sound.Sound;
 
@@ -22,15 +23,13 @@ import java.util.List;
 public class Bomber extends MovingEntity {
 
     private List<Bom> boms;
-    private int maxNumberBom;
     private boolean createBom;
 
     public Bomber(int x, int y, Image img) {
         super( x, y, img);
         boms = new ArrayList<>();
-        this.maxNumberBom = 3;
         this.steps = 0;
-        this.speed = 1;
+        this.speed = 2;
         this.hp = 3;
         currentDirection = Direction.DOWN;
         spriteUp = new Sprite[] {Sprite.player_up_1, Sprite.player_up_2, Sprite.player_up};
@@ -38,12 +37,12 @@ public class Bomber extends MovingEntity {
         spriteLeft = new Sprite[] {Sprite.player_left_1, Sprite.player_left_2, Sprite.player_left};
         spriteRight = new Sprite[] {Sprite.player_right_1, Sprite.player_right_2, Sprite.player_right};
         spriteDead = new Sprite[] {Sprite.player_dead1, Sprite.player_dead2, Sprite.player_dead3};
-        setRectBox(new RectBox(this.x + 1, this.y + 1, this.x + Sprite.SCALED_SIZE - 7, this.y + Sprite.SCALED_SIZE - 2));
+        setRectBox(new RectBox(this.x + 2, this.y + 2, this.x + Sprite.SCALED_SIZE - 7, this.y + Sprite.SCALED_SIZE - 4));
 
     }
 
     @Override
-    public void move(List<Entity> entities, double time) {
+    public void move(double time) {
         int index = (int)((time % (2 * 0.1)) / 0.1);
         int xa = 0, ya = 0;
         if (steps > 0) {
@@ -61,7 +60,7 @@ public class Bomber extends MovingEntity {
                     xa += speed;
                     break;
             }
-            if (!canMove(this.x + xa, this.y + ya, entities)) {
+            if (!canMove(this.x + xa, this.y + ya)) {
                 this.x += xa;
                 this.y += ya;
                 this.setImage(index);
@@ -74,12 +73,17 @@ public class Bomber extends MovingEntity {
 
 
     @Override
-    public boolean canMove(int x, int y, List<Entity> other) {
+    public boolean canMove(int x, int y) {
         this.rectBox.setPosition(x, y);
-        for (Entity e : other) {
+        for (Entity e : Board.getStillObjects()) {
             if (this.isColliding(e)) {
                 this.rectBox.setPosition(this.x, this.y);
-            //    System.out.println(true);
+                return true;
+            }
+        }
+        for (Entity e : Board.getEntities()) {
+            if (!(e instanceof Bomber) && this.isColliding(e)) {
+                this.rectBox.setPosition(this.x, this.y);
                 return true;
             }
         }
@@ -106,35 +110,19 @@ public class Bomber extends MovingEntity {
 
     @Override
     public boolean isColliding(Entity other) {
-        if (other instanceof Grass) return false;
         if (this.getRectBox().checkCollision(other.getRectBox())) {
             if (other instanceof Item) {
-
+                 return false;
+            }
+            if (other instanceof Enemy) {
+                isLive = false;
+                return true;
             }
         }
        return this.getRectBox().checkCollision(other.getRectBox());
     }
 
-    @Override
-    public void update(double time) {
-
-    }
-
-    public void update(List<Entity> entities,double time) {
-        move(entities, time);
-    //    createBom(time);
-        for (int i = 0; i < boms.size(); i++) {
-            if (boms.get(i).isBang()) {
-                boms.remove(i);
-                i--;
-            }
-        }
-        for (int i = 0; i < boms.size(); i++) {
-            boms.get(i).update(time);
-        }
-    }
-
-    public void input(Scene scene, List<Entity> entities) {
+    public void input(Scene scene) {
         if (isLives()) {
             scene.setOnKeyPressed(
                     new EventHandler<KeyEvent>() {
@@ -156,7 +144,8 @@ public class Bomber extends MovingEntity {
                             }
                             if (event.getCode() == KeyCode.SPACE) {
                                 createBom = true;
-                                createBom();
+                                if (createBom() != null)
+                                Board.getBomList().add(createBom());
                             }
                         }
 
@@ -188,12 +177,10 @@ public class Bomber extends MovingEntity {
 
 
 
-    public void createBom() {
+    public Bom createBom() {
         if (createBom) {
-            if (boms.size() == maxNumberBom) {
-                createBom = false;
-                System.out.println(false);
-                return;
+            if (Board.getBomList().size() >= Board.maxBom) {
+                return null;
             }
             int realX = this.getX() / Sprite.SCALED_SIZE;
             int realY = this.getY() / Sprite.SCALED_SIZE;
@@ -203,30 +190,24 @@ public class Bomber extends MovingEntity {
             if (countY > 15) realY++;
 
             Bom bom = new Bom(realX, realY, Sprite.bomb.getFxImage(),BombermanGame.time);
-            for (int i = 0; i < boms.size(); i++) {
-                if (bom.isColliding(boms.get(i))) {
-                    System.out.println(false);
-                    return;
+            for (Entity bom1: Board.getBomList()) {
+                if (bom.isColliding(bom1)) {
+                    return null;
                 }
             }
-            boms.add(bom);
             Sound.play("BOM_SET");
-            createBom = false;
+            return bom;
         }
+        return null;
     }
 
     public boolean isCreateBom() {
         return createBom;
     }
 
-    public void setMaxNumberBom(int maxNumberBom) {
-        this.maxNumberBom = maxNumberBom;
-    }
-
     public void setSpeed(int speed) {
         this.speed = speed;
     }
-
 
     public List<Bom> getBoms() {
         return boms;

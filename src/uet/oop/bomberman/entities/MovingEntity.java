@@ -27,9 +27,9 @@ public abstract class MovingEntity extends Entity{
         MAX_STEPS = 0;
     }
 
-    public abstract void move(List<Entity> entities, double time);
+    public abstract void move(double time);
 
-    public abstract boolean canMove(int x, int y, List<Entity> other);
+    public abstract boolean canMove(int x, int y);
 
     public void setImage(int index) {
         switch (currentDirection) {
@@ -60,6 +60,10 @@ public abstract class MovingEntity extends Entity{
         this.steps = steps;
     }
 
+    public void update(double time) {
+        move(time);
+        dead();
+    }
 
 
 }

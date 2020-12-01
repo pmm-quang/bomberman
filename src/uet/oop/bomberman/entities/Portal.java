@@ -16,4 +16,5 @@ public class Portal extends Entity {
     public void update(double time) {
 
     }
+
 }
