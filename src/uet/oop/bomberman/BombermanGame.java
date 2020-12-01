@@ -92,7 +92,7 @@ public class BombermanGame extends Application {
         pane.translateYProperty().bind(clip.yProperty().multiply(-1));
         //
 
-     //   Sound.play("soundtrack");
+        Sound.play("soundtrack");
         final long timeStart = System.currentTimeMillis();
 
         KeyBoard.input(scene);
