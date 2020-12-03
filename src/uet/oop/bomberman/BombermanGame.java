@@ -15,32 +15,21 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.lever.FileManagement;
+import uet.oop.bomberman.sound.Sound;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class BombermanGame extends Application {
-
-    public static final String[] MAP =
-            {"###############################"
-            ,"#p     ** *  1 * 2 *  * * *   #"
-            ,"# # # #*# # #*#*# # # #*#*#*# #"
-            ,"#  x*     ***  *  1   * 2 * * #",
-            "# # # # # #*# # #*#*# # # # #*#",
-            "#f         x **  *  *   1     #",
-            "# # # # # # # # # #*# #*# # # #",
-            "#*  *      *  *      *        #",
-            "# # # # #*# # # #*#*# # # # # #",
-            "#*    **  *       *           #",
-            "# #*# # # # # # #*# # # # # # #",
-            "#           *   *  *          #",
-            "###############################"};
 
     public static  double time;
     private int width;
@@ -49,16 +38,12 @@ public class BombermanGame extends Application {
     private boolean pause = false;
     public static Timeline timer;
     private Canvas canvas;
+    Pane pane;
     private Board board = new Board();
     public static void main(String[] args) {
         Application.launch(BombermanGame.class);
     }
 
-    private double clampRange(double value, double min, double max) {
-        if (value < min) return min ;
-        if (value > max) return max ;
-        return value ;
-    }
 
     @Override
     public void start(Stage stage) {
@@ -67,20 +52,52 @@ public class BombermanGame extends Application {
         height = FileManagement.getHeight();
         canvas = new Canvas(Sprite.SCALED_SIZE * width, Sprite.SCALED_SIZE * height);
         gc = canvas.getGraphicsContext2D();
+        Text text = new Text("He");
+        pane = new Pane(canvas);
+        pane.getChildren().add(text);
+        Scene scene = new Scene(new BorderPane(pane),600, Sprite.SCALED_SIZE * height);
 
         //add a scrolling camera
         Rectangle player = new Rectangle(Board.getBomber().getX(), Board.getBomber().getY(), 0, 0);
-        // Tao root container
-    //    Group root = new Group();
-        Pane pane = new Pane(canvas);
-        Scene scene = new Scene(new BorderPane(pane),500, Sprite.SCALED_SIZE *MAP.length);
         pane.getChildren().add(player);
+        scrollingCamera(scene, player);
+        //
+
+        Sound.play("soundtrack", AudioClip.INDEFINITE);
+        final long timeStart = System.currentTimeMillis();
+        KeyBoard.input(scene);
+    //    scene.setFill(Color.BLACK);
+        stage.setScene(scene);
+        stage.show();
+
+       timer = new Timeline(new KeyFrame(Duration.seconds(0.032), new EventHandler<ActionEvent>() {
+           @Override
+           public void handle(ActionEvent event) {
+               time = (System.currentTimeMillis() - timeStart) / 1000.0;
+               board.update();
+               board.render(gc, canvas);
+               board.nextLevel(gc, scene, canvas);
+
+               player.setX(Board.getBomber().getX());
+               player.setY(Board.getBomber().getY());
+
+           }
+       }));
+       timer.setDelay(Duration.seconds(3));
+       timer.setCycleCount(Animation.INDEFINITE);
+       timer.play();
+    }
+
+    /**
+     * add a scrolling camera.
+     */
+    private void scrollingCamera(Scene scene, Rectangle player) {
+        Rectangle clip = new Rectangle();
 
         pane.setMinSize(Sprite.SCALED_SIZE * width, Sprite.SCALED_SIZE * height);
         pane.setPrefSize(Sprite.SCALED_SIZE * width, Sprite.SCALED_SIZE * height);
         pane.setMinSize(Sprite.SCALED_SIZE * width, Sprite.SCALED_SIZE * height);
-    //    root.getChildren().add(canvas);
-        Rectangle clip = new Rectangle();
+        //    root.getChildren().add(canvas);
         clip.widthProperty().bind(scene.widthProperty());
         clip.heightProperty().bind(scene.heightProperty());
         clip.xProperty().bind(Bindings.createDoubleBinding(() ->clampRange(player.getX() - scene.getWidth()/2
@@ -90,29 +107,12 @@ public class BombermanGame extends Application {
         pane.setClip(clip);
         pane.translateXProperty().bind(clip.xProperty().multiply(-1));
         pane.translateYProperty().bind(clip.yProperty().multiply(-1));
-        //
+    }
 
-        Sound.play("soundtrack");
-        final long timeStart = System.currentTimeMillis();
-
-        KeyBoard.input(scene);
-
-       timer = new Timeline(new KeyFrame(Duration.seconds(0.017), new EventHandler<ActionEvent>() {
-           @Override
-           public void handle(ActionEvent event) {
-               time = (System.currentTimeMillis() - timeStart) / 1000.0;
-                   board.update();
-                   board.render(gc, canvas);
-                   player.setX(Board.getBomber().getX());
-                   player.setY(Board.getBomber().getY());
-           }
-       }));
-       timer.setCycleCount(Animation.INDEFINITE);
-       timer.play();
-       scene.setFill(Color.BLACK);
-        stage.setScene(scene);
-        stage.show();
-
+    private double clampRange(double value, double min, double max) {
+        if (value < min) return min ;
+        if (value > max) return max ;
+        return value ;
     }
 
 }

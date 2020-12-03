@@ -116,7 +116,7 @@ public class FileManagement{
                         break;
                     case 's': //them SpeedItem
                         board.addStillObject(new Grass(j, i, Sprite.grass.getFxImage()));
-                        board.addStillObject(new SpeedItem(j, i, Sprite.powerup_bombs.getFxImage()));
+                        board.addStillObject(new SpeedItem(j, i, Sprite.powerup_speed.getFxImage()));
                         board.addStillObject(new Brick(j, i, Sprite.brick.getFxImage()));
                         break;
                     case 'f': //them FlameItem

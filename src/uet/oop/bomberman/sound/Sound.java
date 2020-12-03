@@ -9,11 +9,12 @@ import java.io.File;
 
 public class Sound {
 
-    public static void play(String name) {
+    public static void play(String name, int loops) {
         String path = "res/sound/"+ name +".wav";
         Media media = new Media(new File(path).toURI().toString());
         AudioClip mp = new AudioClip(new File(path).toURI().toString());
-        mp.setCycleCount(AudioClip.INDEFINITE);
+        mp.setCycleCount(loops);
+
         mp.play();
     }
 

@@ -217,6 +217,14 @@ public class Sprite {
 	}
 	
 	public static Sprite movingSprite(Sprite normal, Sprite x1, Sprite x2, int animate, int time) {
+		int index = time / animate;
+		if (index == 0) {
+			return x2;
+		} else if (index == 1) {
+			return x1;
+		}
+		return normal;
+		/**
 		int calc = animate % time;
 		int diff = time / 3;
 		
@@ -229,11 +237,12 @@ public class Sprite {
 		}
 			
 		return x2;
+		 */
 	}
 	
-	public static Sprite movingSprite(Sprite x1, Sprite x2, int animate, int time) {
-		int diff = time / 2;
-		return (animate % time > diff) ? x1 : x2; 
+	public static Sprite movingSprite(Sprite x1, Sprite x2, int animate, double time) {
+		int index = (int)((time % (2 * 0.1)) / 0.1);
+		return (index == 1) ? x1 : x2;
 	}
 	
 	public int getSize() {

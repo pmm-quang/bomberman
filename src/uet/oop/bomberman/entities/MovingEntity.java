@@ -1,8 +1,11 @@
 package uet.oop.bomberman.entities;
 
 import javafx.scene.image.Image;
+import uet.oop.bomberman.Board;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.direction.Direction;
+import uet.oop.bomberman.entities.Boms.Bom;
+import uet.oop.bomberman.entities.Boms.Flame;
 import uet.oop.bomberman.graphics.Sprite;
 
 import java.util.List;
@@ -61,8 +64,24 @@ public abstract class MovingEntity extends Entity{
     }
 
     public void update(double time) {
-        move(time);
+        if (isLives()) {
+            move(time);
+        }
+        for (Bom e : Board.getBomList()) {
+            for (int i = 0; i < e.getFlames().length; i++) {
+                if (e.getFlames()[i] != null) {
+                    if (this.isColliding(e.getFlames()[i])) {
+                        this.hp--;
+                        System.out.println(true);
+                    }
+                }
+            }
+            if (isColliding(e)) {
+                if (e.isBang()) {
+                    hp--;
+                }
+            }
+        }
         dead();
     }
-
 }

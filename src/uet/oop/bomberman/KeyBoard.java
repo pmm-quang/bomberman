@@ -4,6 +4,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.util.Duration;
 import uet.oop.bomberman.direction.Direction;
 import uet.oop.bomberman.entities.player.Bomber;
 import uet.oop.bomberman.graphics.Sprite;
@@ -45,6 +46,7 @@ public class KeyBoard {
                                 if (count == 2) count = 0;
                                 if (count == 1) {
                                     BombermanGame.timer.pause();
+
                                 } else {
                                     BombermanGame.timer.play();
                                 }
@@ -69,7 +71,7 @@ public class KeyBoard {
                                 Board.getBomber().setSteps(0);
                             } else if (e.getCode() == KeyCode.SPACE) {
                                 Board.getBomber().setCreateBom(false);
-                                Sound.stop("BOM_SET");
+                             //   Sound.stop("BOM_SET");
                             }
                         }
                     });

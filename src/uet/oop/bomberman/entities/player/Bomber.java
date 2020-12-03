@@ -1,10 +1,6 @@
 package uet.oop.bomberman.entities.player;
 
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import uet.oop.bomberman.Board;
 import uet.oop.bomberman.BombermanGame;
 import uet.oop.bomberman.boundedbox.RectBox;
@@ -14,13 +10,10 @@ import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.Grass;
 import uet.oop.bomberman.entities.Item.Item;
 import uet.oop.bomberman.entities.MovingEntity;
+import uet.oop.bomberman.entities.Portal;
 import uet.oop.bomberman.entities.enemy.Enemy;
 import uet.oop.bomberman.graphics.Sprite;
-import uet.oop.bomberman.lever.FileManagement;
 import uet.oop.bomberman.sound.Sound;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Bomber extends MovingEntity {
 
@@ -29,41 +22,41 @@ public class Bomber extends MovingEntity {
     public Bomber(int x, int y, Image img) {
         super( x, y, img);
         this.steps = 0;
-        this.speed = 2;
-        this.hp = 3;
+        this.speed = 3;
+        hp = 1;
         currentDirection = Direction.DOWN;
-        spriteUp = new Sprite[] {Sprite.player_up_1, Sprite.player_up_2, Sprite.player_up};
-        spriteDown = new Sprite[] {Sprite.player_down_1, Sprite.player_down_2,Sprite.player_down};
-        spriteLeft = new Sprite[] {Sprite.player_left_1, Sprite.player_left_2, Sprite.player_left};
-        spriteRight = new Sprite[] {Sprite.player_right_1, Sprite.player_right_2, Sprite.player_right};
         spriteDead = new Sprite[] {Sprite.player_dead1, Sprite.player_dead2, Sprite.player_dead3};
-        setRectBox(new RectBox(this.x + 2, this.y + 2, this.x + Sprite.SCALED_SIZE - 7, this.y + Sprite.SCALED_SIZE - 4));
+        setRectBox(new RectBox(this.x + 2, this.y + 5, Sprite.SCALED_SIZE - 9, Sprite.SCALED_SIZE - 4));
 
     }
 
     @Override
     public void move(double time) {
-        int index = (int)((time % (2 * 0.1)) / 0.1);
         int xa = 0, ya = 0;
         if (steps > 0) {
             switch (currentDirection) {
-                case UP:
-                    ya -= speed;
-                    break;
-                case DOWN:
-                    ya += speed;
-                    break;
-                case LEFT:
-                    xa -= speed;
-                    break;
-                case RIGHT:
-                    xa += speed;
-                    break;
+                case UP: ya -= speed; break;
+                case DOWN: ya += speed; break;
+                case LEFT: xa -= speed; break;
+                case RIGHT: xa += speed; break;
             }
             if (!canMove(this.x + xa, this.y + ya)) {
                 this.x += xa;
                 this.y += ya;
-                this.setImage(index);
+                switch (currentDirection) {
+                    case UP:
+                        this.img = Sprite.movingSprite(Sprite.player_up_1, Sprite.player_up_2,2, time).getFxImage();
+                        break;
+                    case DOWN:
+                        this.img = Sprite.movingSprite(Sprite.player_down_1, Sprite.player_down_2,2, time).getFxImage();
+                        break;
+                    case RIGHT:
+                        this.img = Sprite.movingSprite(Sprite.player_right_1, Sprite.player_right_2,2, time).getFxImage();
+                        break;
+                    case LEFT:
+                        this.img = Sprite.movingSprite(Sprite.player_left_1, Sprite.player_left_2,2, time).getFxImage();
+                        break;
+                }
                 steps--;
             } else {
                 steps = 0;
@@ -82,7 +75,7 @@ public class Bomber extends MovingEntity {
             }
         }
         for (Entity e : Board.getEntities()) {
-            if (!(e instanceof Bomber) && this.isColliding(e)) {
+            if (this.isColliding(e)) {
                 this.rectBox.setPosition(this.x, this.y);
                 return true;
             }
@@ -93,35 +86,49 @@ public class Bomber extends MovingEntity {
 
     @Override
     public void dead() {
-        if (!isLive) {
+        if (!isLives()) {
             int index = timeDie / 10;
             setImg(spriteDead[index].getFxImage());
             timeDie++;
             if (timeDie > 28) {
-                removed = true;
+                Sound.play("endgame3", 0);
+                BombermanGame.timer.stop();
             }
         }
     }
 
     @Override
     public boolean isLives() {
+        if (hp <= 0) {
+            isLive = false;
+        }
         return isLive;
     }
 
     @Override
     public boolean isColliding(Entity other) {
         if (other instanceof Grass) return false;
+
         if (this.getRectBox().checkCollision(other.getRectBox())) {
             if (other instanceof Item) {
+                Board.buff((Item)other);
+                Sound.play("Item", 0);
                  return false;
             }
             if (other instanceof Enemy) {
                 isLive = false;
                 return true;
             }
+
+            if (other instanceof Portal) {
+                Board.setNextLv(true);
+                System.out.println(Board.nextLv);
+                return false;
+            }
         }
        return this.getRectBox().checkCollision(other.getRectBox());
     }
+
 
 
     public Bom createBom() {
@@ -142,7 +149,7 @@ public class Bomber extends MovingEntity {
                     return null;
                 }
             }
-            Sound.play("BOM_SET");
+            Sound.play("BOM_SET", 0);
             return bom;
         }
         return null;
@@ -163,4 +170,5 @@ public class Bomber extends MovingEntity {
     public void setCreateBom(boolean createBom) {
         this.createBom = createBom;
     }
+
 }

@@ -10,8 +10,9 @@ public class RectBox {
     public RectBox(int x, int y, int width, int height) {
         this.minX = x;
         this.minY = y;
-        this.maxX = width;
-        this.maxY = height;
+
+        this.maxX =  x + width;
+        this.maxY = y + height;
     }
 
 
@@ -46,4 +47,5 @@ public class RectBox {
         setMaxY(this.maxY + (y - oldY));
 
     }
+
 }

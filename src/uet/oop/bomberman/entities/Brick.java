@@ -1,6 +1,8 @@
 package uet.oop.bomberman.entities;
 
 import javafx.scene.image.Image;
+import uet.oop.bomberman.Board;
+import uet.oop.bomberman.entities.Boms.Bom;
 import uet.oop.bomberman.entities.Boms.Flame;
 import uet.oop.bomberman.graphics.Sprite;
 
@@ -20,7 +22,6 @@ public class Brick extends Entity {
     public boolean isColliding(Entity other) {
         if (other instanceof Flame) {
             if (this.rectBox.checkCollision(other.getRectBox())) {
-                destroyed = true;
                 return true;
             }
         }
@@ -29,6 +30,15 @@ public class Brick extends Entity {
 
     @Override
     public void update(double time) {
+        for (Bom e : Board.getBomList()) {
+            for (int i = 0; i < e.getFlames().length; i++) {
+                if (e.getFlames()[i] != null) {
+                    if (this.isColliding(e.getFlames()[i])) {
+                        destroyed = true;
+                    }
+                }
+            }
+        }
         destroyed();
     }
 
@@ -43,6 +53,7 @@ public class Brick extends Entity {
         }
     }
 
-
-
+    public void setDestroyed(boolean destroyed) {
+        this.destroyed = destroyed;
+    }
 }

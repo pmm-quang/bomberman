@@ -3,11 +3,15 @@ package uet.oop.bomberman.entities.enemy;
 import javafx.scene.image.Image;
 import uet.oop.bomberman.Board;
 import uet.oop.bomberman.direction.Direction;
+import uet.oop.bomberman.entities.Boms.Bom;
+import uet.oop.bomberman.entities.Boms.Flame;
 import uet.oop.bomberman.entities.Boms.FlameSegment;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.entities.Grass;
 import uet.oop.bomberman.entities.MovingEntity;
 import uet.oop.bomberman.entities.enemy.move.EnemyDirection;
+import uet.oop.bomberman.graphics.Sprite;
+import uet.oop.bomberman.sound.Sound;
 
 public abstract class Enemy extends MovingEntity {
     protected boolean alive;
@@ -37,22 +41,29 @@ public abstract class Enemy extends MovingEntity {
     @Override
     public void dead() {
         if (!isLives()) {
-            if (timeDie < 15) {
+            if (timeDie == 1) {
+                Sound.play("AA126_11", 0);
+            }
+            if (timeDie < 3) {
                 setImg(spriteDead[0].getFxImage());
             } else {
                 removed = true;
             }
+            timeDie ++;
         }
     }
+
 
     @Override
     public boolean canMove(int x, int y) {
         this.rectBox.setPosition(x, y);
-        for (Entity e : Board.getBomList()) {
+        for (Bom e : Board.getBomList()) {
             if (this.isColliding(e)) {
                 this.rectBox.setPosition(this.x, this.y);
+
                 return true;
             }
+
         }
         for (Entity e : Board.getStillObjects()) {
             if (this.isColliding(e)) {
@@ -67,12 +78,8 @@ public abstract class Enemy extends MovingEntity {
     @Override
     public boolean isColliding(Entity other) {
         if (other instanceof Grass) return false;
-        if (other instanceof FlameSegment) {
-            if (hp > 0) {
-                hp --;
-            }
-            return false;
-        }
+
+
         return this.getRectBox().checkCollision(other.getRectBox());
     }
 
