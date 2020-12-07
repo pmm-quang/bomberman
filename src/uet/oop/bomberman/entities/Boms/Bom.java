@@ -2,6 +2,7 @@ package uet.oop.bomberman.entities.Boms;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import uet.oop.bomberman.Board;
 import uet.oop.bomberman.direction.Direction;
 import uet.oop.bomberman.entities.Entity;
 import uet.oop.bomberman.graphics.Sprite;
@@ -26,13 +27,30 @@ public class Bom extends Entity {
 
     @Override
     public boolean isColliding(Entity other) {
-        return  (this.rectBox.checkCollision(other.getRectBox()));
+        if (other instanceof Flame) {
+            if (this.rectBox.checkCollision(other.getRectBox())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canExploded() {
+        for (Bom e : Board.getBomList()) {
+            for (int i = 0; i < e.getFlames().length; i++) {
+                if (e.getFlames()[i] != null) {
+                    if (this.isColliding(e.getFlames()[i])) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Override
     public void update(double time) {
-
-        if (time - timeStart < 3) {
+        if (time - timeStart < 3 && !canExploded()) {
             setImg(Sprite.movingSprite(Sprite.bomb_1, Sprite.bomb_2, 2, time).getFxImage());
         } else {
             if (!bang) {
