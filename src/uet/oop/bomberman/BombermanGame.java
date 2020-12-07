@@ -13,10 +13,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.AudioClip;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -27,11 +27,19 @@ import uet.oop.bomberman.graphics.Sprite;
 import uet.oop.bomberman.lever.FileManagement;
 import uet.oop.bomberman.sound.Sound;
 
+import javax.swing.*;
+import java.awt.*;
+
+import static javafx.scene.paint.Color.BLACK;
+import static javafx.scene.paint.Color.WHITE;
 
 
 public class BombermanGame extends Application {
 
-    public static  double time;
+    public static double time;
+    private static Board board = new Board();
+    public static JPANEL jpanel = new JPANEL(Board.level);
+    public static AnchorPane ro = new AnchorPane();
     private int width;
     private int height;
     private GraphicsContext gc;
@@ -39,7 +47,6 @@ public class BombermanGame extends Application {
     public static Timeline timer;
     private Canvas canvas;
     Pane pane;
-    private Board board = new Board();
     public static void main(String[] args) {
         Application.launch(BombermanGame.class);
     }
@@ -50,17 +57,21 @@ public class BombermanGame extends Application {
         // Tao Canvas
         width = FileManagement.getWidth();
         height = FileManagement.getHeight();
-        canvas = new Canvas(Sprite.SCALED_SIZE * width, Sprite.SCALED_SIZE * height);
+        canvas = new Canvas(Sprite.SCALED_SIZE * width, Sprite.SCALED_SIZE * height + 32);
         gc = canvas.getGraphicsContext2D();
         Text text = new Text("He");
         pane = new Pane(canvas);
         pane.getChildren().add(text);
-        Scene scene = new Scene(new BorderPane(pane),600, Sprite.SCALED_SIZE * height);
+        Scene scene = new Scene(new BorderPane(pane),600, Sprite.SCALED_SIZE * height + 32);
 
         //add a scrolling camera
         Rectangle player = new Rectangle(Board.getBomber().getX(), Board.getBomber().getY(), 0, 0);
         pane.getChildren().add(player);
         scrollingCamera(scene, player);
+
+        ro.getChildren().addAll(new Rectangle(Sprite.SCALED_SIZE * width, Sprite.SCALED_SIZE,BLACK));
+        jpanel.setPanel();
+        pane.getChildren().add(ro);
         //
 
         Sound.play("soundtrack", AudioClip.INDEFINITE);
@@ -83,7 +94,7 @@ public class BombermanGame extends Application {
 
            }
        }));
-       timer.setDelay(Duration.seconds(3));
+
        timer.setCycleCount(Animation.INDEFINITE);
        timer.play();
     }
@@ -114,5 +125,6 @@ public class BombermanGame extends Application {
         if (value > max) return max ;
         return value ;
     }
+
 
 }
